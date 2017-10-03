@@ -1,8 +1,11 @@
 package main
 
 import (
+	"bytes"
+	"compress/gzip"
+	"encoding/base64"
 	"fmt"
-	"io"
+	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -45,20 +48,32 @@ func openOutput() {
 	if outFile, err = os.Create(outputFileName); err != nil {
 		log.Fatal("Error creating templates.go", err)
 	}
-	outFile.Write([]byte(`
-		package main
+	outFile.WriteString(`
+package main
 
-		var templates map[string]string
+import (
+	"bytes"
+	"compress/gzip"
+	"encoding/base64"
+)
 
-		func init() {
-			templates = make(map[string]string)
-
-	`))
+var templates = map[string]string {
+	`)
 }
 
 func closeOutput() {
+	outFile.WriteString(`
+}
 
-	outFile.Write([]byte("}\n"))
+func getTemplate(key string) string {
+	gzBytes,_ := base64.StdEncoding.DecodeString(templates[key])
+	gz, _:= gzip.NewReader(bytes.NewBuffer(gzBytes))
+
+	var b bytes.Buffer
+	b.ReadFrom(gz)
+	return b.String()
+}
+	`)
 
 	if err := outFile.Close(); err != nil {
 		log.Fatal("Error closing template output file", err)
@@ -75,17 +90,24 @@ func processFile(path string, info os.FileInfo, err error) error {
 	mapKey := strings.TrimPrefix(path, templateRoot)
 	log.Println("\t", mapKey)
 
-	outFile.Write([]byte("templates[\"" + mapKey + "\"] = `"))
+	outFile.WriteString("\"" + mapKey + "\": \"")
 
-	if file, err := os.Open(path); err != nil {
+	if fileBytes, err := ioutil.ReadFile(path); err != nil {
 		fmt.Println("Error opening file:", err)
 	} else {
-		if _, copyErr := io.Copy(outFile, file); copyErr != nil {
-			log.Fatal("Error coyping template file", copyErr)
+		var b bytes.Buffer
+		gz := gzip.NewWriter(&b)
+		if _, gzErr := gz.Write(fileBytes); gzErr != nil {
+			log.Fatal("Error compressing file contents:", gzErr)
+		} else {
+			gz.Flush()
+			gz.Close()
+
+			outFile.WriteString(base64.StdEncoding.EncodeToString(b.Bytes()))
 		}
 	}
 
-	outFile.Write([]byte("`\n"))
+	outFile.WriteString("\",\n")
 
 	return nil
 }

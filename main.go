@@ -52,7 +52,7 @@ func createTemplateApp() {
 	}
 
 	log.Println("Writing template files...")
-	for templateFileName, contents := range templates {
+	for templateFileName, _ := range templates {
 		fileName := fmt.Sprintf("%v/src/%v", rootDir, templateFileName)
 		log.Println("\t", fileName)
 
@@ -61,7 +61,7 @@ func createTemplateApp() {
 		if file, openErr := os.Create(fileName); openErr != nil {
 			log.Fatal("Unable to open", fileName, "for writing:", openErr);
 		} else {
-			file.WriteString(contents)
+			file.WriteString(getTemplate(templateFileName))
 		}
 	}
 }
