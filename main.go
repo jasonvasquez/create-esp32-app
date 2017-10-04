@@ -56,22 +56,16 @@ func createTemplateApp() {
 		writeTemplateToFile(templateFile, rootDir)
 	}
 
-	log.Println("Initializing git...")
-	cmd := exec.Command("git", "init")
+	var cmd *exec.Cmd
+	cmd = exec.Command("git", "init")
 	cmd.Dir = rootDir
-	log.Printf("Running command and waiting for it to finish...")
-	err := cmd.Run()
-	log.Printf("Command finished with error: %v", err)
+	cmd.Run()
 
-	cmd2 := exec.Command("git", "add", "-A",  ".")
-	cmd2.Dir = rootDir
-	log.Printf("Running command and waiting for it to finish...")
-	err2 := cmd2.Run()
-	log.Printf("Command finished with error: %v", err2)
+	cmd = exec.Command("git", "add", "-A",  ".")
+	cmd.Dir = rootDir
+	cmd.Run()
 
-	cmd3 := exec.Command("git", "commit", "-m", "Initial import")
-	cmd3.Dir = rootDir
-	log.Printf("Running command and waiting for it to finish...")
-	err3 := cmd3.Run()
-	log.Printf("Command finished with error: %v", err3)
+	cmd = exec.Command("git", "commit", "-m", "Initial import")
+	cmd.Dir = rootDir
+	cmd.Run()
 }
