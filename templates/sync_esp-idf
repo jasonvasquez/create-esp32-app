@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+get_script_dir () {
+     SOURCE="${BASH_SOURCE[0]}"
+     while [ -h "$SOURCE" ]; do
+          DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+          SOURCE="$( readlink "$SOURCE" )"
+          [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
+     done
+     $( cd -P "$( dirname "$SOURCE" )" )
+     pwd
+}
+
+SCRIPT_DIR=$(get_script_dir)
+
+docker run --name esp_sync -d -it -e HOST_USER_ID=$(id -u) -e HOST_USER_GID=$(id -g) -w /src -v ${SCRIPT_DIR}/src:/src jasonvasquez/esp-idf bash
+docker cp esp_sync:/esp/esp-idf ${SCRIPT_DIR}/esp-idf
+docker stop esp_sync
+docker rm esp_sync

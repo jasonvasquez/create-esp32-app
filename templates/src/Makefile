@@ -3,7 +3,6 @@
 # project subdirectory.
 #
 
-PROJECT_NAME := blink
+PROJECT_NAME := esp32-app
 
 include $(IDF_PATH)/make/project.mk
-

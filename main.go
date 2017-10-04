@@ -4,6 +4,7 @@ import (
 	"flag"
 	//"fmt"
 	"os"
+	"os/exec"
 	"log"
 	//"path"
 )
@@ -45,26 +46,32 @@ func cleanupExisting() {
 }
 
 func createTemplateApp() {
-
-
 	if err := os.MkdirAll(rootDir, 0755); err != nil {
 		log.Fatal("Unable to create src directory:", err)
 	}
 
 	log.Println("Writing template files...")
 	for templateFile, _ := range templates {
-
 		log.Println("\t", templateFile)
 		writeTemplateToFile(templateFile, rootDir)
-
-		//fileName := fmt.Sprintf("%v/%v", rootDir, templateFileName)
-		//
-		//os.MkdirAll(path.Dir(fileName), 0755)
-		//
-		//if file, openErr := os.Create(fileName); openErr != nil {
-		//	log.Fatal("Unable to open", fileName, "for writing:", openErr);
-		//} else {
-		//	file.WriteString(getTemplate(templateFileName))
-		//}
 	}
+
+	log.Println("Initializing git...")
+	cmd := exec.Command("git", "init")
+	cmd.Dir = rootDir
+	log.Printf("Running command and waiting for it to finish...")
+	err := cmd.Run()
+	log.Printf("Command finished with error: %v", err)
+
+	cmd2 := exec.Command("git", "add", "-A",  ".")
+	cmd2.Dir = rootDir
+	log.Printf("Running command and waiting for it to finish...")
+	err2 := cmd2.Run()
+	log.Printf("Command finished with error: %v", err2)
+
+	cmd3 := exec.Command("git", "commit", "-m", "Initial import")
+	cmd3.Dir = rootDir
+	log.Printf("Running command and waiting for it to finish...")
+	err3 := cmd3.Run()
+	log.Printf("Command finished with error: %v", err3)
 }
