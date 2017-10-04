@@ -2,10 +2,10 @@ package main
 
 import (
 	"flag"
-	"fmt"
+	//"fmt"
 	"os"
 	"log"
-	"path"
+	//"path"
 )
 
 //go:generate go run scripts/includeText.go
@@ -47,21 +47,24 @@ func cleanupExisting() {
 func createTemplateApp() {
 
 
-	if err := os.MkdirAll(fmt.Sprintf("%v/src", rootDir), 0755); err != nil {
+	if err := os.MkdirAll(rootDir, 0755); err != nil {
 		log.Fatal("Unable to create src directory:", err)
 	}
 
 	log.Println("Writing template files...")
-	for templateFileName, _ := range templates {
-		fileName := fmt.Sprintf("%v/src/%v", rootDir, templateFileName)
-		log.Println("\t", fileName)
+	for templateFile, _ := range templates {
 
-		os.MkdirAll(path.Dir(fileName), 0755)
+		log.Println("\t", templateFile)
+		writeTemplateToFile(templateFile, rootDir)
 
-		if file, openErr := os.Create(fileName); openErr != nil {
-			log.Fatal("Unable to open", fileName, "for writing:", openErr);
-		} else {
-			file.WriteString(getTemplate(templateFileName))
-		}
+		//fileName := fmt.Sprintf("%v/%v", rootDir, templateFileName)
+		//
+		//os.MkdirAll(path.Dir(fileName), 0755)
+		//
+		//if file, openErr := os.Create(fileName); openErr != nil {
+		//	log.Fatal("Unable to open", fileName, "for writing:", openErr);
+		//} else {
+		//	file.WriteString(getTemplate(templateFileName))
+		//}
 	}
 }

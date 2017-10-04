@@ -10,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"strconv"
 )
 
 const templateRoot = "templates/"
@@ -55,9 +56,18 @@ import (
 	"bytes"
 	"compress/gzip"
 	"encoding/base64"
+	"io"
+	"log"
+	"os"
+	"path"
 )
 
-var templates = map[string]string {
+type TemplateFileInfo struct {
+	mode       os.FileMode
+	contents   string
+}
+
+var templates = map[string]TemplateFileInfo {
 	`)
 }
 
@@ -65,14 +75,24 @@ func closeOutput() {
 	outFile.WriteString(`
 }
 
-func getTemplate(key string) string {
-	gzBytes,_ := base64.StdEncoding.DecodeString(templates[key])
-	gz, _:= gzip.NewReader(bytes.NewBuffer(gzBytes))
+func writeTemplateToFile(templateKey string, outputPathRoot string) {
+	fileInfo := templates[templateKey]
+	gzBytes, _ := base64.StdEncoding.DecodeString(fileInfo.contents)
+	gz, _ := gzip.NewReader(bytes.NewBuffer(gzBytes))
 
-	var b bytes.Buffer
-	b.ReadFrom(gz)
-	return b.String()
+	outputFileName := path.Join(outputPathRoot, templateKey)
+
+	if err := os.MkdirAll(path.Dir(outputFileName), 0755); err != nil {
+		log.Fatal("Unable to create directory:", err)
+	}
+
+	if outFile, err := os.OpenFile(outputFileName, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, fileInfo.mode); err != nil {
+		log.Fatal("Error creating template output file:", err)
+	} else {
+		io.Copy(outFile, gz)
+	}
 }
+
 	`)
 
 	if err := outFile.Close(); err != nil {
@@ -90,8 +110,12 @@ func processFile(path string, info os.FileInfo, err error) error {
 	mapKey := strings.TrimPrefix(path, templateRoot)
 	log.Println("\t", mapKey)
 
-	outFile.WriteString("\"" + mapKey + "\": \"")
 
+	outFile.WriteString("\"" + mapKey + "\": {\n")
+
+	outFile.WriteString(fmt.Sprintf("mode: 0%v,\n", strconv.FormatUint(uint64(info.Mode()), 8)))
+
+	outFile.WriteString("contents: \"")
 	if fileBytes, err := ioutil.ReadFile(path); err != nil {
 		fmt.Println("Error opening file:", err)
 	} else {
@@ -107,7 +131,7 @@ func processFile(path string, info os.FileInfo, err error) error {
 		}
 	}
 
-	outFile.WriteString("\",\n")
+	outFile.WriteString("\",\n},\n")
 
 	return nil
 }
