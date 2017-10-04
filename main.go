@@ -3,9 +3,9 @@ package main
 import (
 	"flag"
 	//"fmt"
+	"log"
 	"os"
 	"os/exec"
-	"log"
 	//"path"
 )
 
@@ -61,7 +61,7 @@ func createTemplateApp() {
 	cmd.Dir = rootDir
 	cmd.Run()
 
-	cmd = exec.Command("git", "add", "-A",  ".")
+	cmd = exec.Command("git", "add", "-A", ".")
 	cmd.Dir = rootDir
 	cmd.Run()
 

@@ -9,8 +9,8 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"strings"
 	"strconv"
+	"strings"
 )
 
 const templateRoot = "templates/"
@@ -109,7 +109,6 @@ func processFile(path string, info os.FileInfo, err error) error {
 
 	mapKey := strings.TrimPrefix(path, templateRoot)
 	log.Println("\t", mapKey)
-
 
 	outFile.WriteString("\"" + mapKey + "\": {\n")
 
