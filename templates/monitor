@@ -13,4 +13,4 @@ get_script_dir () {
 
 SCRIPT_DIR=$(get_script_dir)
 
-docker run --rm -it --privileged -e HOST_USER_ID=$(id -u) -e HOST_USER_GID=$(id -g) -w /src -v ${SCRIPT_DIR}/src:/src -v esp-idf:/esp --entrypoint="" jasonvasquez/esp-idf make flash
+docker run --rm -it --privileged -e HOST_USER_ID=$(id -u) -e HOST_USER_GID=$(id -g) -w /src -v ${SCRIPT_DIR}/src:/src -v esp-idf:/esp --entrypoint="" jasonvasquez/esp-idf make monitor
