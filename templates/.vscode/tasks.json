@@ -1,0 +1,35 @@
+{
+    "version": "0.1.0",
+    "command": "bash",
+    "args": ["-c"],
+    "isShellCommand": true,
+    "showOutput": "always",
+    "suppressTaskName": true,
+    "tasks": [
+        {
+            "taskName": "build app",
+            "args": ["${workspaceRoot}/scripts/esp32 build"],
+            "isBuildCommand": true,
+            "problemMatcher": {
+                "owner": "cpp",
+                "fileLocation": "absolute",
+                "pattern": {
+                    "regexp": "^\/(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
+                    "file": 1,
+                    "line": 2,
+                    "column": 3,
+                    "severity": 4,
+                    "message": 5
+                }
+            }
+        },
+        {
+            "taskName": "monitor",
+            "args": ["${workspaceRoot}/scripts/esp32 monitor"]
+        },
+        {
+            "taskName": "flash app",
+            "args": ["${workspaceRoot}/scripts/esp32 flash"]
+        }
+    ]
+}

@@ -14,19 +14,30 @@ get_script_dir () {
 
 SCRIPT_DIR=$(get_script_dir)
 
-DOCKER_CMD="docker run --rm -it --privileged --device=/dev/ttyUSB0 -e HOST_USER_ID=$(id -u) -e HOST_USER_GID=$(id -g) -w /src -v ${SCRIPT_DIR}/../src:/src -v esp-idf:/esp jasonvasquez/esp-idf"
+DOCKER_COMMON="--privileged --device=/dev/ttyUSB0 -e HOST_USER_ID=$(id -u) -e HOST_USER_GID=$(id -g) -w /src -v ${SCRIPT_DIR}/../src:/src -v esp-idf:/esp"
+DOCKER_RUN="docker run ${DOCKER_COMMON}"
 
 build () {
-    ${DOCKER_CMD} make
+    ${DOCKER_RUN} --rm jasonvasquez/esp-idf make
 }
 flash () {
-    ${DOCKER_CMD} make flash
+    ${DOCKER_RUN} --rm jasonvasquez/esp-idf make flash
 }
 monitor () {
-    ${DOCKER_CMD} make monitor
+    ${DOCKER_RUN} --rm -it jasonvasquez/esp-idf make monitor
 }
 shell () {
-    ${DOCKER_CMD} bash
+    ${DOCKER_RUN} --rm -it jasonvasquez/esp-idf bash
+}
+sync-headers () {
+set -x
+
+    ${DOCKER_RUN} -it -d --name esp-idf-headers jasonvasquez/esp-idf bash
+    docker cp esp-idf-headers:/esp/esp-idf ${SCRIPT_DIR}/..
+    docker kill esp-idf-headers
+    docker rm esp-idf-headers
+    find ./esp-idf -type d -exec chmod 755 {} \;
+    find ./esp-idf -type f -exec chmod 644 {} \;
 }
 usage () {
     echo "here's some help"
@@ -46,6 +57,8 @@ do
             monitor ;;
         "shell" )
             shell ;;
+        "sync-headers" )
+            sync-headers ;;
         "help" )
             usage ;;
     esac

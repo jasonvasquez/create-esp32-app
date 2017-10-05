@@ -1,0 +1,20 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceRoot}/esp-idf/components"
+            ],
+            "browse": {
+                "limitSymbolsToIncludedHeaders": true,
+                "databaseFilename": "",
+                "path": [
+                    "${workspaceRoot}/esp-idf/components"
+                ]
+            },
+
+            "intelliSenseMode": "clang-x64"
+        }
+    ],
+    "version": 3
+}
