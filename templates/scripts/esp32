@@ -14,7 +14,7 @@ get_script_dir () {
 
 SCRIPT_DIR=$(get_script_dir)
 
-DOCKER_CMD="docker run --rm -it --privileged --device=/dev/ttyUSB0 -e HOST_USER_ID=$(id -u) -e HOST_USER_GID=$(id -g) -w /src -v ${SCRIPT_DIR}/src:/src -v esp-idf:/esp jasonvasquez/esp-idf"
+DOCKER_CMD="docker run --rm -it --privileged --device=/dev/ttyUSB0 -e HOST_USER_ID=$(id -u) -e HOST_USER_GID=$(id -g) -w /src -v ${SCRIPT_DIR}/../src:/src -v esp-idf:/esp jasonvasquez/esp-idf"
 
 build () {
     ${DOCKER_CMD} make
