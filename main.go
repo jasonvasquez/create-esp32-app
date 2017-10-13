@@ -9,7 +9,7 @@ import (
 	//"path"
 )
 
-//go:generate go run scripts/includeText.go
+//go:generate go run scripts/generateTemplate.go
 
 var appName string
 var clobber bool
